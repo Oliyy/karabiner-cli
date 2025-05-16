@@ -145,7 +145,6 @@ program
       let suggestedToKey: string | null = null;
       let suggestedModifiers: string[] = [];
       const hyperModifiersLeft = ["left_command", "left_option", "left_control", "left_shift"].sort();
-      const hyperModifiersRight = ["right_command", "right_option", "right_control", "right_shift"].sort();
       const suggestionKeyPool = "abcdefghijklmnopqrstuvwxyz0123456789".split('');
 
       for (const key of suggestionKeyPool) {
@@ -153,12 +152,6 @@ program
         if (!usedToCombinations.has(comboLeft)) {
           suggestedToKey = key;
           suggestedModifiers = hyperModifiersLeft;
-          break;
-        }
-        const comboRight = `${key}:${hyperModifiersRight.join(',')}`;
-        if (!usedToCombinations.has(comboRight)) {
-          suggestedToKey = key;
-          suggestedModifiers = hyperModifiersRight;
           break;
         }
       }
