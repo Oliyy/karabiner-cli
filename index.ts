@@ -3,7 +3,7 @@ import { Command } from 'commander';
 import inquirer from 'inquirer';
 import { KarabinerConfigManager } from './configManager';
 import type { Rule, Manipulator, ToEvent, DevicePreset } from './types';
-import fs from 'fs'; // For fs.watch in the 'watch' command
+import fs from 'fs';
 
 const program = new Command();
 const configManager = new KarabinerConfigManager();
@@ -57,7 +57,6 @@ async function displayComplexModifications() {
         if (manipulator.from.modifiers && manipulator.from.modifiers.optional?.includes('any')) {
           fromKey = `Any+${fromKey}`;
         }
-        // TODO: Handle mandatory modifiers for 'from' if necessary
         console.log(`    From: ${fromKey}`);
         if (manipulator.to && manipulator.to.length > 0) {
           console.log(`    To: ${manipulator.to.map(formatToEvent).join(', ')}`);
@@ -78,7 +77,6 @@ program
   .description('List all active complex modifications')
   .action(displayComplexModifications);
 
-// Device presets as discussed
 const devicePresets: DevicePreset[] = [
   { name: "Foot Pedal", description: "VoltPad", vendor_id: 65195, product_id: 6 },
   { name: "VoltPad", description: "VoltPad", vendor_id: 33025, product_id: 9217 },
@@ -87,7 +85,6 @@ const devicePresets: DevicePreset[] = [
   { name: "PIXIE", description: "PIXIE", vendor_id: 16969, product_id: 20600 },
 ];
 
-// Placeholder for 'add' command
 program
   .command('add')
   .description('Add a new complex modification interactively')
@@ -102,7 +99,6 @@ program
 
       const currentRules = configManager.getComplexModifications(activeProfile);
 
-      // 1. Select Device Preset
       const presetChoices = [
         ...devicePresets.map(p => ({ name: `${p.name} (Vendor: ${p.vendor_id}, Product: ${p.product_id})`, value: p })),
         new inquirer.Separator(),
@@ -131,12 +127,10 @@ program
         targetDevice = selectedPresetChoice as DevicePreset;
       }
 
-      // 2. Enter "From" Key
       const { fromKey } = await inquirer.prompt([
         { type: 'input', name: 'fromKey', message: 'Enter the "from" key_code (e.g., a, keypad_1, f1):' },
       ]);
 
-      // 3. Auto-Suggest "To" Key + Modifiers
       const usedToCombinations = new Set<string>();
       currentRules.forEach(rule => {
         rule.manipulators.forEach(manipulator => {
@@ -185,7 +179,6 @@ program
           finalToKey = suggestedToKey;
           finalModifiers = suggestedModifiers;
         } else {
-          // Manual input for 'to' key
           const manualTo = await inquirer.prompt([
             { type: 'input', name: 'toKey', message: 'Enter the "to" key_code:'},
             { 
@@ -221,7 +214,6 @@ program
           finalModifiers = manualTo.toModifiers;
       }
       
-      // 4. Construct the new rule
       const autoDescription = `${fromKey} to ${formatToEvent({key_code: finalToKey, modifiers: finalModifiers})} for ${targetDevice.description || targetDevice.name}`;
       
       const { description } = await inquirer.prompt ([
@@ -264,7 +256,6 @@ program
         ],
       };
 
-      // 5. Add rule and save
       configManager.addComplexModificationRule(activeProfile, newRule);
       await configManager.saveConfig();
       console.log(`Successfully added new rule: "${description}"`);
@@ -281,7 +272,6 @@ program
     }
   });
 
-// Placeholder for 'watch' command
 program
   .command('watch')
   .description('Monitor karabiner.json for changes and update list')
@@ -290,7 +280,7 @@ program
     console.log(`Watching ${karabinerConfigFilePath} for changes...`);
 
     const listModificationsOnWatch = async () => {
-      console.clear(); // Clear console before re-listing
+      console.clear();
       console.log(`File changed at ${new Date().toLocaleTimeString()}. Reloading modifications...`);
       try {
         await displayComplexModifications();
@@ -299,7 +289,6 @@ program
       }
     };
 
-    // Initial list
     await listModificationsOnWatch();
 
     fs.watch(karabinerConfigFilePath, async (eventType, filename) => {
@@ -307,11 +296,10 @@ program
         await listModificationsOnWatch();
       } else if (filename && eventType === 'rename') {
         console.log(`File ${filename} was renamed or deleted. Stopping watch.`);
-        process.exit(0); // Or try to re-watch
+        process.exit(0);
       }
     });
 
-    // Keep the process alive
     process.stdin.resume();
     process.on('SIGINT', () => {
       console.log('Stopping watch.');

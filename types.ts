@@ -74,7 +74,7 @@ export interface ToEvent {
   mouse_key?: object;
   sticky_modifier?: object;
   software_function?: object;
-  modifiers?: string[]; // e.g., ["left_command", "left_shift"]
+  modifiers?: string[];
   halt?: boolean;
   lazy?: boolean;
   repeat?: boolean;
@@ -83,7 +83,7 @@ export interface ToEvent {
 
 export interface Modifiers {
   mandatory?: string[];
-  optional?: string[]; // e.g., ["any"]
+  optional?: string[];
 }
 
 export interface Condition {
