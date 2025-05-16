@@ -1,0 +1,20 @@
+{
+  "name": "karabiner-cli",
+  "version": "0.1.0",
+  "description": "A simple CLI tool built with Bun to make managing Karabiner Elements complex modifications a bit easier, especially when juggling multiple macro pads and foot pedals!",
+  "author": "oliyy",
+  "license": "MIT",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@types/inquirer": "^9.0.8",
+    "commander": "^13.1.0",
+    "inquirer": "^12.6.1"
+  }
+}
